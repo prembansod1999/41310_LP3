@@ -49,7 +49,7 @@ class Sdes
 			Larr[i] = temp[i+1];
 		}
 	}
-	int* inputRArray(map<int,int> temp)
+	void inputRArray(map<int,int> temp)
 	{
 		for(int i = 0;i<5;i++)
 		{
@@ -245,7 +245,8 @@ string decToBinary(int n)
 		if(n == 3)
 		{
 			return "11";
-		}	
+		}
+		return "";	
 } 
 string calculate(int *arr,int temp[4][4])
 {
