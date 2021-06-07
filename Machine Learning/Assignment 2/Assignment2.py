@@ -22,9 +22,10 @@ from sklearn.tree import DecisionTreeClassifier
 dt = DecisionTreeClassifier()
 dt.fit(x,y)
 
-y_pred=dt.predict([[2,1,0,0]])
+
+y_pred=dt.predict([[1,1,0,0]])
 print("Prediction:", y_pred[0])
 
 from sklearn import tree
 fig = plt.figure(figsize=(25,20))
-tree.plot_tree(dt)
+tree.plot_tree(dt,feature_names =['age','income','gender','marital_status'])

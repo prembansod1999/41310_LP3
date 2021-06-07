@@ -1,39 +1,26 @@
-
+#import the packages
+import pandas as pd
 import numpy as np
 
-x = np.array([2, 4, 4, 4, 6, 6])
-y = np.array([4, 2, 4, 6, 2, 4])
-classlist = np.array([1, 1, 2, 1, 2, 1])
-test_tuple = [6, 6]
+#Read dataset
+dataset=pd.read_csv("kdata.csv")
+X=dataset.iloc[:,:-1].values
+y=dataset.iloc[:,2].values
 
-k = 3
-knn_array = []
+#import KNeighborshood Classifier and create object of it
+from sklearn.neighbors import KNeighborsClassifier
+classifier=KNeighborsClassifier(n_neighbors=3)
+classifier.fit(X,y)
 
-dict = {}
+#predict the class for the point(6,6)
+X_test=np.array([6,6])
+y_pred=classifier.predict([X_test])
+print('General KNN',y_pred)
 
-for i in range(np.size(x)):
-	dict[i] = np.sqrt(((x[i] - test_tuple[0])**2) + ((y[i] - test_tuple[1])**2))
+classifier=KNeighborsClassifier(n_neighbors=3,weights='distance')
+classifier.fit(X,y)
 
-dict = sorted(dict.items(), key = lambda kv : (kv[1], kv[0]))
-
-for i in range(k):
-	knn_array.append(dict[i][0])
-
-my_class = []
-
-for i in range(k):
-	my_class.append(classlist[knn_array[i]])
-
-my_class = {i: my_class.count(i) for i in range(k)}
-
-max = 0
-
-for key, value in my_class.items():
-	if value > max:
-		max = value
-		maxclass = key
-
-if maxclass == 1:
-	print ("The Predicted class for [6, 6] is: Blue")
-elif maxclass == 2:
-	print ("The predicted class for [6, 6] is: Orange")
+#predict the class for the point(6,6)
+X_test=np.array([6,6])
+y_pred=classifier.predict([X_test])
+print('Distance Weighted KNN',y_pred)

@@ -7,6 +7,8 @@ class Sdes
 	int *Larr,*Rarr,*IPLarr,*IPRarr,*S0L,*S1R;
 	int s0[4][4] = {{1,0,3,2},{3,2,1,0},{0,2,1,3},{3,1,3,2}};
 	int s1[4][4] = {{0,1,2,3},{2,0,1,3},{3,0,1,0},{2,1,0,3}};
+	//S0 and S1 are two sboxes
+	//Simplified data encryption standard
 	Sdes()
 	{
 		Larr = new int[5];
@@ -270,11 +272,14 @@ int main()
 {
 	map<int,int> temp;
 	Sdes obj;
+	//Take 10 bit key as input
 	obj.inputKey();
 	cout<<"Key = ";
 	obj.print(obj.key);
+	//Perform permute 10 on 10 bit key
 	obj.permute10();
 	cout<<"After Permute 10 = ";
+	//After permute 10 divide 10 bit key into two half of 5 bits on left and 5 bits on right
 	obj.print(obj.p10);
 	obj.inputLArray(obj.p10);
 	obj.inputRArray(obj.p10);
@@ -282,6 +287,7 @@ int main()
 	obj.printArray(obj.Larr,5);
 	cout<<"Right Array = ";
 	obj.printArray(obj.Rarr,5);
+	//Rotate left by 1 
 	cout<<"After Rotation\n";
 	obj.Larr = leftRotate(obj.Larr,1,5);
 	obj.Rarr = leftRotate(obj.Rarr,1,5);
@@ -293,13 +299,16 @@ int main()
 	obj.assignArrayToKey();
 	cout<<"Key = ";
 	obj.print(obj.key);
+	//generate 8 bit subkey k1 by using 10 bit key
 	obj.key1 = obj.permute8();
 	cout<<"Key1 = ";
 	obj.print(obj.key1);
+	//divide 10 bit key into two half of 5 bits on left and 5 bits on right
 	cout<<"Left Array = ";
 	obj.printArray(obj.Larr,5);
 	cout<<"Right Array = ";
 	obj.printArray(obj.Rarr,5);
+	//Rotate left by 2
 	cout<<"After Rotation\n";
 	obj.Larr = leftRotate(obj.Larr,2,5);
 	obj.Rarr = leftRotate(obj.Rarr,2,5);
@@ -311,12 +320,16 @@ int main()
 	obj.assignArrayToKey();
 	cout<<"Key = ";
 	obj.print(obj.key);
+	//generate 8 bit subkey k2 by using 10 bit key
 	obj.key2 = obj.permute8();
 	cout<<"Key2 = ";
 	obj.print(obj.key2);
+	//Key k1 and k2 generated.
+	//Take input as 8 bit plain Text
 	obj.inputPlainText();
 	cout<<"Plain Text = ";
 	obj.print(obj.pt);
+	//Perform initial Permutation on plain text
 	obj.pt = obj.initialPermutation(obj.pt);
 	cout<<"After initial Permutation = ";
 	obj.print(obj.pt);
@@ -326,13 +339,16 @@ int main()
 	cout<<"Right array of initial Permutation = ";
 	obj.InputInitialPermutationRightArray(obj.pt);
 	obj.printArray(obj.IPRarr,4);
+	//Expand and permute using rightarray of initial permutation
 	obj.expandpermuted();
 	cout<<"Expanded = ";
 	obj.print(obj.expanded);
 	cout<<"Key1 = ";
 	obj.print(obj.key1);
+	//Perform xor between expandpermute and key 1 
 	temp = xor8(obj.expanded,obj.key1);
 	cout<<"Result of xor = ";
+	//break xor result into two half of 4 bit to s0 sbox and 4 bit to s1 sbox
 	obj.print(temp);
 	obj.InputS0L(temp);
 	obj.InputS1R(temp);
@@ -340,7 +356,7 @@ int main()
 	obj.printArray(obj.S0L,4);
 	cout<<"S1R = ";
 	obj.printArray(obj.S1R,4);
-	
+	//1st and 4th bit represent row and 2nd and 3rd bit represent column of sbox respectively
 	string ss0 = calculate(obj.S0L,obj.s0);
 	cout<<"S0 = "<<ss0<<endl;
 	
@@ -351,6 +367,7 @@ int main()
 	s0s1.append(ss0);
 	s0s1.append(ss1);
 	cout<<"S0S1 = "<<s0s1<<endl;
+	//Permute 4 operation on s0 and s1 box output
 	obj.permute4(s0s1);
 	cout<<"p4 = ";	
 	obj.print(obj.p4);
@@ -358,18 +375,21 @@ int main()
 	obj.Larr = obj.IPRarr;
 	cout<<"Left = ";
 	obj.printArray(obj.IPLarr,4);
+	//Perform xor between permute 4 and left half of initial permutation
 	obj.Rarr = xor4(obj.p4,obj.IPLarr);
 	cout<<"Result of xor = ";
 	obj.printArray(obj.Rarr,4);
-	
-
+	//Perform swap operation
+	//assign right half to left half and left half to right half
 	obj.IPRarr = obj.Rarr;
 	cout<<"After Expanded = ";
+	//Perform expand and permute
 	obj.expandpermuted();
 	obj.print(obj.expanded);
 	cout<<"Key2 = ";
 	obj.print(obj.key2);
 	cout<<"Result of xor = ";
+	//Perform xor between expanded output and key 2
 	temp = xor8(obj.expanded,obj.key2);
 	obj.print(temp);
 
@@ -398,10 +418,12 @@ int main()
 	obj.Larr = xor4(obj.p4,obj.Larr);
 	cout<<"Result of xor = ";
 	obj.printArray(obj.Larr,4);
+	//perform initial permutation inverse and get cipher text
 	obj.ipinverse();
 	cout<<"Cipher Text = ";
 	obj.print(obj.ct);
-	
+	//Decryption Started
+	//Apply initial permutation on cipher text
 	obj.ct = obj.initialPermutation(obj.ct);
 	cout<<"After initial Permutation = ";
 	obj.print(obj.ct);
@@ -411,6 +433,8 @@ int main()
 	cout<<"Right array of initial Permutation = ";
 	obj.InputInitialPermutationRightArray(obj.ct);
 	obj.printArray(obj.IPRarr,4);
+	//perform expand and permuted on right half of cipher text
+	//In decryption all steps similar to encryption only difference is that in decryption we use key 2 for xor operation first and then use key 1
 	obj.expandpermuted();
 	cout<<"Expanded = ";
 	obj.print(obj.expanded);
